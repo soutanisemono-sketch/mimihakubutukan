@@ -426,4 +426,89 @@
         document.head.appendChild(style);
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97c54e9f97b6fcbd',t:'MTc1NzQwNjQ1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+<hr class="my-12 border-t-4 border-green-400">
+
+<!-- 結果表示セクション -->
+<div id="surveyResults" class="max-w-5xl mx-auto mt-12 p-6 rounded-2xl bg-white shadow-xl">
+  <h2 class="text-3xl font-bold text-green-800 mb-6">📊 みんなの回答結果</h2>
+  <p class="text-gray-600 mb-6">このページで答えられたアンケートは、下にリアルタイムで反映されます！</p>
+
+  <!-- 総回答数 -->
+  <div class="mb-8">
+    <div class="text-4xl font-bold text-green-700" id="totalVotes">0票</div>
+    <div class="text-sm text-gray-500">総回答数</div>
+  </div>
+
+  <!-- 満足度 -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-semibold text-green-700 mb-4">😊 文化祭の満足度</h3>
+    <div id="satisfactionResults" class="space-y-4"></div>
+  </div>
+
+  <!-- 人気の出し物 -->
+  <div>
+    <h3 class="text-2xl font-semibold text-green-700 mb-4">🎭 人気の出し物</h3>
+    <div id="favoriteResults" class="space-y-4"></div>
+  </div>
+</div>
+
+<script>
+  // 結果表示用のデータ
+  let surveyData = JSON.parse(localStorage.getItem('surveyData') || JSON.stringify({
+    satisfaction: {
+      'とても楽しかった': 0,
+      '楽しかった': 0,
+      '普通': 0,
+      'あまり楽しくなかった': 0
+    },
+    favorite: {
+      '演劇': 0,
+      '音楽発表': 0,
+      '展示': 0,
+      '食べ物屋台': 0
+    }
+  }));
+
+  // データ更新処理
+  function updateResults() {
+    // 総回答数
+    const total = Object.values(surveyData.satisfaction).reduce((a,b)=>a+b,0);
+    document.getElementById('totalVotes').textContent = `${total}票`;
+
+    // 満足度
+    const satContainer = document.getElementById('satisfactionResults');
+    satContainer.innerHTML = '';
+    Object.entries(surveyData.satisfaction).forEach(([opt,count])=>{
+      satContainer.innerHTML += `
+        <div class="p-3 bg-green-50 rounded-lg flex justify-between items-center">
+          <span>${opt}</span>
+          <span class="font-bold text-green-700">${count}票</span>
+        </div>`;
+    });
+
+    // 人気の出し物
+    const favContainer = document.getElementById('favoriteResults');
+    favContainer.innerHTML = '';
+    Object.entries(surveyData.favorite).forEach(([opt,count])=>{
+      favContainer.innerHTML += `
+        <div class="p-3 bg-blue-50 rounded-lg flex justify-between items-center">
+          <span>${opt}</span>
+          <span class="font-bold text-blue-700">${count}票</span>
+        </div>`;
+    });
+  }
+
+  // localStorageの変化を監視
+  window.addEventListener('storage', e=>{
+    if(e.key==="surveyData"){
+      surveyData = JSON.parse(e.newValue);
+      updateResults();
+    }
+  });
+
+  // 初期表示
+  updateResults();
+</script>
+    
 </html>
